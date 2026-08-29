@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THAARAI AQUA — Invoice</title>
+<link rel="icon" href="logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --indigo: #1F86A8;
+    --ink: #23414F;
+    --slate: #6C8B96;
+    --stone: #F3FAFC;
+    --paper: #FFFFFF;
+    --line: #DCEEF2;
+    --moss: #2AA6BE;
+    --moss-dark: #1E8AA0;
+    --brass: #F0A63E;
+    --err: #C1503F;
+    --ok: #2F8F5B;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background: var(--stone);
+    color: var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header{
+    background: linear-gradient(180deg, #FFFFFF 0%, var(--stone) 100%);
+    color: var(--ink);
+    padding: 30px 20px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  header .inner{max-width:700px;margin:0 auto;display:flex;align-items:center;gap:18px;}
+  header .stamp{
+    width:58px;height:58px;border-radius:50%;
+    border:2px solid var(--line);flex-shrink:0;background:#fff;object-fit:cover;padding:2px;
+    box-shadow:0 4px 14px rgba(31,134,168,0.15);
+  }
+  .mono-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--moss-dark);font-weight:600;margin:0 0 5px;}
+  h1{font-family:'Fraunces',serif;font-size:clamp(21px,4.6vw,27px);margin:0 0 3px;font-weight:600;letter-spacing:-0.01em;line-height:1.15;}
+  .company-line{font-size:12px;color:var(--slate);line-height:1.5;}
+  .company-line b{color:var(--ink);}
+
+  .perf{max-width:700px;margin:0 auto;padding:14px 20px 0;display:flex;align-items:center;gap:6px;}
+  .perf .dash{flex:1;border-top:2px dashed var(--line);}
+  .perf .hole{width:7px;height:7px;border-radius:50%;background:var(--paper);border:1px solid var(--line);flex-shrink:0;}
+
+  main{max-width:700px;margin:0 auto;padding:28px 20px 90px;}
+  .sheet{background:var(--paper);border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 0 var(--line), 0 12px 30px rgba(31,134,168,0.08);}
+
+  .step{padding:24px 24px;border-bottom:1px solid var(--line);}
+  .step:last-of-type{border-bottom:none;}
+  legend, .block-title{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--indigo);
+    text-transform:uppercase;letter-spacing:.08em;margin:0 0 16px;display:block;
+  }
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 16px;}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:15px;}
+  .field.full{grid-column:1/-1;}
+  label{font-size:11.5px;font-weight:600;color:var(--slate);letter-spacing:.03em;text-transform:uppercase;}
+
+  input, textarea, select{
+    font-family:'Inter',sans-serif;border:none;border-bottom:1.5px solid var(--line);border-radius:0;
+    padding:9px 2px;font-size:15px;color:var(--ink);background:transparent;outline:none;
+    transition:border-color .15s ease;width:100%;
+  }
+  input:focus, textarea:focus, select:focus{border-bottom-color:var(--moss);}
+  textarea{resize:vertical;min-height:50px;border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;}
+  textarea:focus{border-color:var(--moss);}
+
+  .radio-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .radio-pill{
+    border:1.5px solid var(--line);border-radius:20px;padding:9px 16px;text-align:center;
+    font-size:12.5px;font-family:'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.02em;
+    color:var(--slate);cursor:pointer;transition:all .15s ease;user-select:none;text-transform:uppercase;
+  }
+  .radio-pill input{display:none;}
+  .radio-pill.checked{background:var(--moss);border-color:var(--moss-dark);color:#fff;}
+
+  /* Items table */
+  .items-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+  .items-table th{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--slate);text-align:left;padding:0 8px 8px 0;border-bottom:1.5px solid var(--line);
+  }
+  .items-table th.qty-col, .items-table td.qty-col{text-align:right;width:70px;}
+  .items-table th.amt-col, .items-table td.amt-col{text-align:right;width:110px;}
+  .items-table th.sno-col, .items-table td.sno-col{width:32px;}
+  .items-table td{padding:8px 8px 8px 0;vertical-align:top;}
+  .items-table input{padding:8px 2px;font-size:14px;}
+  .row-sno{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--slate);padding-top:10px;display:block;}
+  .remove-row{background:none;border:none;color:var(--err);cursor:pointer;font-size:16px;padding:4px 6px;line-height:1;border-radius:4px;}
+  .remove-row:hover{background:#FAEAE6;}
+  .add-row-btn{
+    background:none;border:1.5px dashed var(--line);color:var(--moss-dark);border-radius:8px;
+    padding:9px 14px;font-size:12.5px;font-family:'IBM Plex Mono',monospace;font-weight:600;
+    cursor:pointer;letter-spacing:.03em;text-transform:uppercase;width:100%;margin-top:6px;
+    transition:all .15s ease;
+  }
+  .add-row-btn:hover{border-color:var(--moss);background:var(--stone);}
+
+  .totals-box{margin-top:18px;border-top:1.5px solid var(--line);padding-top:14px;}
+  .totals-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;}
+  .totals-row label{margin:0;}
+  .totals-row .tval{width:130px;}
+  .totals-row input{text-align:right;}
+  .totals-row.grand{border-top:1.5px solid var(--line);margin-top:6px;padding-top:12px;}
+  .totals-row.grand .label{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.06em;}
+  .totals-row.grand .value{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--indigo);}
+
+  .submit-wrap{padding:24px;}
+  button.submit{
+    width:100%;background:var(--moss);color:#fff;border:2px solid var(--moss-dark);border-radius:6px;
+    padding:15px 16px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;
+    letter-spacing:.1em;text-transform:uppercase;transition:background .15s ease, transform .1s ease;
+  }
+  button.submit:hover{background:var(--moss-dark);}
+  button.submit:active{transform:scale(0.99);}
+  button.submit:disabled{background:var(--slate);border-color:var(--slate);cursor:not-allowed;}
+
+  .status{margin-top:14px;padding:12px 14px;border-radius:6px;font-size:13.5px;display:none;font-weight:500;font-family:'IBM Plex Mono',monospace;}
+  .status.ok{display:block;background:#E7F2EA;color:var(--ok);border:1px solid #BFDCC7;}
+  .status.bad{display:block;background:#FAEAE6;color:var(--err);border:1px solid #EFC7BC;}
+
+  .setup-flag{max-width:700px;margin:16px auto 0;padding:0 20px;}
+  .setup-flag .box{background:#FFF6E8;border:1px solid #F0DBB0;color:#8A5A15;border-radius:6px;padding:12px 14px;font-size:12.5px;line-height:1.5;font-family:'IBM Plex Mono',monospace;}
+
+  footer{text-align:center;color:var(--slate);font-size:11.5px;padding:20px;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;}
+
+  @media (max-width:520px){
+    .grid{grid-template-columns:1fr;}
+    header .stamp{width:46px;height:46px;}
+    .step{padding:20px 16px;}
+    .items-table th.amt-col, .items-table td.amt-col{width:82px;}
+    .items-table th.qty-col, .items-table td.qty-col{width:54px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <img src="logo.jpg" alt="Thaarai logo" class="stamp">
+    <div>
+      <p class="mono-label">Purchase Invoice</p>
+      <h1>THAARAI AQUA</h1>
+      <p class="company-line">Ootala Foods Pvt Ltd · <b>GST:</b> 33AAFCO1342P1ZC · <b>UDYAM:</b> TN-27-0142467</p>
+    </div>
+  </div>
+</header>
+<div class="perf">
+  <div class="hole"></div><div class="dash"></div><div class="hole"></div><div class="dash"></div><div class="hole"></div>
+</div>
+
+<div class="setup-flag" id="setupFlag" style="display:none;">
+  <div class="box">
+    ⚠ BACKEND NOT CONNECTED — set SCRIPT_URL near the bottom of index.html to your Apps Script Web App URL. See README.
+  </div>
+</div>
+
+<main>
+  <form id="invoiceForm" class="sheet">
+
+    <div class="step">
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend>Invoice Info</legend>
+        <div class="grid">
+          <div class="field"><label>Invoice No <span style="text-transform:none;">(e.g. TA/PKT/26-27/01)</span></label><input type="text" name="invoice_no" required></div>
+          <div class="field"><label>Date</label><input type="date" name="date" required></div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="step">
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend>Customer</legend>
+        <div class="grid">
+          <div class="field full"><label>Customer Name</label><input type="text" name="customer_name" required></div>
+          <div class="field"><label>Code</label><input type="text" name="code"></div>
+          <div class="field"><label>Phone No</label><input type="tel" name="phone" pattern="[0-9]{10}" maxlength="10"></div>
+          <div class="field full"><label>Address</label><textarea name="address"></textarea></div>
+          <div class="field full"><label>GST No</label><input type="text" name="customer_gst"></div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="step">
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend>Mode of Payment</legend>
+        <div class="radio-row" id="modeRow">
+          <label class="radio-pill" data-value="Cash"><input type="radio" name="mode_of_payment" value="Cash" required>Cash</label>
+          <label class="radio-pill" data-value="Card"><input type="radio" name="mode_of_payment" value="Card">Card</label>
+          <label class="radio-pill" data-value="UPI"><input type="radio" name="mode_of_payment" value="UPI">UPI</label>
+          <label class="radio-pill" data-value="Cheque"><input type="radio" name="mode_of_payment" value="Cheque">Cheque</label>
+          <label class="radio-pill" data-value="Bank"><input type="radio" name="mode_of_payment" value="Bank">Bank</label>
+        </div>
+        <div class="field full" style="margin-top:16px;"><label>Tr. No <span style="text-transform:none;">(transaction / reference no.)</span></label><input type="text" name="tr_no"></div>
+      </fieldset>
+    </div>
+
+    <div class="step">
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend>Items</legend>
+        <table class="items-table">
+          <thead>
+            <tr><th class="sno-col">S.No</th><th>Item</th><th class="qty-col">Qty</th><th class="amt-col">Amount (₹)</th><th></th></tr>
+          </thead>
+          <tbody id="itemsBody">
+            <!-- rows injected by JS -->
+          </tbody>
+        </table>
+        <button type="button" class="add-row-btn" id="addRowBtn">+ Add Item</button>
+
+        <div class="totals-box">
+          <div class="totals-row">
+            <label>Sub Total</label>
+            <span class="tval" id="subtotalDisplay" style="text-align:right;font-family:'IBM Plex Mono',monospace;font-size:14px;">₹ 0.00</span>
+          </div>
+          <div class="totals-row">
+            <label>CGST (₹)</label>
+            <input type="number" id="cgstInput" name="cgst" min="0" step="0.01" class="tval" value="0">
+          </div>
+          <div class="totals-row">
+            <label>SGST (₹)</label>
+            <input type="number" id="sgstInput" name="sgst" min="0" step="0.01" class="tval" value="0">
+          </div>
+          <div class="totals-row grand">
+            <span class="label">Total</span>
+            <span class="value" id="totalDisplay">₹ 0.00</span>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="step">
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend>Signatures</legend>
+        <div class="grid">
+          <div class="field"><label>Receiver Sign (Name)</label><input type="text" name="receiver_sign"></div>
+          <div class="field"><label>Authorized Sign (Name)</label><input type="text" name="authorized_sign"></div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="submit-wrap">
+      <button class="submit" type="submit">Submit Invoice</button>
+      <div class="status" id="status"></div>
+    </div>
+  </form>
+</main>
+
+<footer>THAARAI AQUA — OOTALA FOODS PVT LTD · PURCHASE INVOICE</footer>
+
+<script>
+  // ====== CONFIGURE THIS ======
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvlmA9LA2NHGMSDFqPfiwGqwIa4EdY-EG3NjXBhcW0BJdZCD6SfNdcbYzwUfC_ABGe/exec";
+  // =============================
+
+  if (SCRIPT_URL === "SCRIPT_URL") {
+    document.getElementById('setupFlag').style.display = 'block';
+  }
+
+  document.querySelector('input[name="date"]').valueAsDate = new Date();
+
+  // Mode of payment pills
+  const modeRow = document.getElementById('modeRow');
+  modeRow.querySelectorAll('.radio-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      modeRow.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('checked'));
+      pill.classList.add('checked');
+      pill.querySelector('input').checked = true;
+    });
+  });
+
+  // Items rows
+  const itemsBody = document.getElementById('itemsBody');
+  const addRowBtn = document.getElementById('addRowBtn');
+  const subtotalDisplay = document.getElementById('subtotalDisplay');
+  const totalDisplay = document.getElementById('totalDisplay');
+  const cgstInput = document.getElementById('cgstInput');
+  const sgstInput = document.getElementById('sgstInput');
+  let rowCount = 0;
+
+  function addRow() {
+    rowCount++;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="sno-col"><span class="row-sno">${rowCount}</span></td>
+      <td><input type="text" class="item-desc" placeholder="Item name"></td>
+      <td class="qty-col"><input type="number" class="item-qty" min="0" step="1" placeholder="0"></td>
+      <td class="amt-col"><input type="number" class="item-amount" min="0" step="0.01" placeholder="0"></td>
+      <td><button type="button" class="remove-row" title="Remove">✕</button></td>
+    `;
+    itemsBody.appendChild(tr);
+    tr.querySelector('.item-amount').addEventListener('input', updateTotals);
+    tr.querySelector('.remove-row').addEventListener('click', () => {
+      tr.remove();
+      renumberRows();
+      updateTotals();
+    });
+  }
+
+  function renumberRows() {
+    rowCount = 0;
+    itemsBody.querySelectorAll('tr').forEach(tr => {
+      rowCount++;
+      tr.querySelector('.row-sno').textContent = rowCount;
+    });
+  }
+
+  function updateTotals() {
+    let subtotal = 0;
+    itemsBody.querySelectorAll('.item-amount').forEach(inp => {
+      subtotal += parseFloat(inp.value) || 0;
+    });
+    const cgst = parseFloat(cgstInput.value) || 0;
+    const sgst = parseFloat(sgstInput.value) || 0;
+    const total = subtotal + cgst + sgst;
+    subtotalDisplay.textContent = '₹ ' + subtotal.toLocaleString('en-IN', {minimumFractionDigits: 2});
+    totalDisplay.textContent = '₹ ' + total.toLocaleString('en-IN', {minimumFractionDigits: 2});
+  }
+
+  cgstInput.addEventListener('input', updateTotals);
+  sgstInput.addEventListener('input', updateTotals);
+
+  addRowBtn.addEventListener('click', addRow);
+  addRow();
+  addRow();
+
+  function resetItems() {
+    itemsBody.innerHTML = '';
+    rowCount = 0;
+    addRow();
+    addRow();
+    cgstInput.value = 0;
+    sgstInput.value = 0;
+    updateTotals();
+  }
+
+  // Submit
+  const form = document.getElementById('invoiceForm');
+  const status = document.getElementById('status');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button.submit');
+    status.style.display = 'none';
+
+    if (SCRIPT_URL === "SCRIPT_URL") {
+      status.className = 'status bad';
+      status.textContent = 'Backend not connected yet — set SCRIPT_URL in index.html first.';
+      status.style.display = 'block';
+      return;
+    }
+
+    let subtotal = 0;
+    const lines = [];
+    itemsBody.querySelectorAll('tr').forEach((tr, i) => {
+      const desc = tr.querySelector('.item-desc').value.trim();
+      const qty = parseFloat(tr.querySelector('.item-qty').value) || 0;
+      const amt = parseFloat(tr.querySelector('.item-amount').value) || 0;
+      if (desc || amt) {
+        lines.push((i + 1) + '. ' + (desc || '(no item)') + ' x' + qty + ' - ₹' + amt.toFixed(2));
+        subtotal += amt;
+      }
+    });
+
+    if (lines.length === 0) {
+      status.className = 'status bad';
+      status.textContent = 'Add at least one item line.';
+      status.style.display = 'block';
+      return;
+    }
+
+    const cgst = parseFloat(cgstInput.value) || 0;
+    const sgst = parseFloat(sgstInput.value) || 0;
+    const total = subtotal + cgst + sgst;
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    data.sheet = 'PurchaseInvoices';
+    data.items = lines.join(' | ');
+    data.sub_total = subtotal.toFixed(2);
+    data.cgst = cgst.toFixed(2);
+    data.sgst = sgst.toFixed(2);
+    data.total_amount = total.toFixed(2);
+    data.submitted_at = new Date().toISOString();
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(data)
+      });
+      status.className = 'status ok';
+      status.textContent = 'SAVED ✓ Invoice submitted successfully.';
+      status.style.display = 'block';
+      form.reset();
+      modeRow.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('checked'));
+      resetItems();
+      document.querySelector('input[name="date"]').valueAsDate = new Date();
+    } catch (err) {
+      status.className = 'status bad';
+      status.textContent = 'Could not save — check your internet connection and try again.';
+      status.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit Invoice';
+    }
+  });
+</script>
+
+</body>
+</html>
